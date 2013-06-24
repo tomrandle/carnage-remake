@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Title of the document</title>
+
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+
+	<script>
+
+		$(document).ready(function() {
+
+			var CANVAS_WIDTH = $(window).width();
+			var CANVAS_HEIGHT = $(window).height();
+
+			var canvasElement = $("<canvas width='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT + "'></canvas>");
+			var canvas = canvasElement.get(0).getContext("2d");
+
+			canvasElement.appendTo('body');
+
+			var textX = 50;
+			var textY = 50;
+
+			function update() {
+		  		textX += 1;
+			}
+
+	
+			function draw() {
+  				canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  				player.draw();
+			}
+			
+			var FPS = 30;
+			
+			setInterval(function() {
+				update();
+				draw();
+			}, 1000/FPS);
+
+			var player = {
+				color: "#00A",
+				x: 220,
+			  	y: 270,
+			  	width: 32,
+			  	height: 32,
+			  	draw: function() {
+			    	canvas.fillStyle = this.color;
+			    	canvas.fillRect(this.x, this.y, this.width, this.height);
+  				}
+			};
+
+		});
+
+
+
+	</script>
+
+	<style type="text/css">
+		body {margin: 0;}
+
+		canvas {background: lightblue;}
+	</style>
+
+</head>
+
+<body>
+</body>
+
+</html>
