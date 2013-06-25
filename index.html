@@ -36,17 +36,16 @@
 
 			function airSpeed() {
 
-				if (player.y < 0) {
-										console.log('ceiling hit');
 
+
+
+
+				if (player.y < 0 ) {
 					return 0;
-
-									}
+				}
 
 				else {
 					return normalSpeed;
-
-
 				}
 			}
 
@@ -64,7 +63,7 @@
 					player.x = canvasWidth;
 				}
 
-				/* Ceiling */ 
+				/* Crash */ 
 
 
 
@@ -78,14 +77,26 @@
 
 
 				if (keydown.left) {
-
-    					player.bearing -= turnSpeed;
+    				player.bearing -= turnSpeed;
   				}
 
   				if (keydown.right) {
   					player.bearing += turnSpeed;
 
   				}
+
+  				if (player.bearing >= 360)
+  				{
+  					player.bearing = (player.bearing - 360) + 0;
+  				}
+
+  				else {
+  					if (player.bearing < 0)
+  					{
+  						player.bearing = player.bearing + 360;
+  					}
+  				}
+
 
 			}
 
