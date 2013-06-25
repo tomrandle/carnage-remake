@@ -16,6 +16,9 @@
 
 			var FPS = 60;
 
+			var turnSpeed = 2;
+			var normalSpeed = 5; 
+
 			var canvasWidth = $(window).width();
 			var canvasHeight = $(window).height();
 
@@ -24,9 +27,35 @@
 
 			canvasElement.appendTo('body');
 
-			
+			/*Helper functions */
+
+			function degToRad (degrees) {
+				return degrees * Math.PI / 180;
+			}
+
+
+			function airSpeed() {
+
+				if (player.y < 0) {
+										console.log('ceiling hit');
+
+					return 0;
+
+									}
+
+				else {
+					return normalSpeed;
+
+
+				}
+			}
+
+
 			function update() {
 				
+
+				/* Infinite canvas */
+
 				if (player.x > canvasWidth) {
 					player.x = 0;
 				}
@@ -35,21 +64,27 @@
 					player.x = canvasWidth;
 				}
 
-				if (keydown.left) {
-    				if (player.bearing > 359)
-    				{
-    					player.bearing = 0;
-    				}
+				/* Ceiling */ 
 
-    				else {
-    					player.bearing += 1;
-    					console.log (player.bearing);
-    				}
+
+
+				/* Forward motion */
+
+				player.x += (airSpeed() * Math.cos(degToRad(player.bearing)));
+				player.y += (airSpeed() * Math.sin(degToRad(player.bearing)));
+
+
+				/* Keyboard inputs */
+
+
+				if (keydown.left) {
+
+    					player.bearing -= turnSpeed;
   				}
 
+  				if (keydown.right) {
+  					player.bearing += turnSpeed;
 
-  					if (keydown.right) {
-    				player.x += 2;
   				}
 
 			}
