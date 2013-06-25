@@ -4,33 +4,62 @@
 	<title>Title of the document</title>
 
 	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+	<script src="keyStatus.js"></script>
+	<script src="jquery.hotkeys.js"></script>
 
 	<script>
 
 		$(document).ready(function() {
 
-			var CANVAS_WIDTH = $(window).width();
-			var CANVAS_HEIGHT = $(window).height();
 
-			var canvasElement = $("<canvas width='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT + "'></canvas>");
+
+
+			var FPS = 60;
+
+			var canvasWidth = $(window).width();
+			var canvasHeight = $(window).height();
+
+			var canvasElement = $("<canvas width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
 			var canvas = canvasElement.get(0).getContext("2d");
 
 			canvasElement.appendTo('body');
 
-			var textX = 50;
-			var textY = 50;
-
+			
 			function update() {
-		  		textX += 1;
+				
+				if (player.x > canvasWidth) {
+					player.x = 0;
+				}
+
+				if (player.x < 0) {
+					player.x = canvasWidth;
+				}
+
+				if (keydown.left) {
+    				if (player.bearing > 359)
+    				{
+    					player.bearing = 0;
+    				}
+
+    				else {
+    					player.bearing += 1;
+    					console.log (player.bearing);
+    				}
+  				}
+
+
+  					if (keydown.right) {
+    				player.x += 2;
+  				}
+
 			}
 
 	
 			function draw() {
-  				canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  				canvas.clearRect(0, 0, canvasWidth, canvasHeight);
   				player.draw();
 			}
 			
-			var FPS = 30;
 			
 			setInterval(function() {
 				update();
@@ -41,11 +70,16 @@
 				color: "#00A",
 				x: 220,
 			  	y: 270,
-			  	width: 32,
-			  	height: 32,
+			  	bearing: 180,
+			  	width: 60,
+			  	height: 30,
 			  	draw: function() {
+			  		canvas.save();
+			  		canvas.translate(this.x, this.y);
+			  		canvas.rotate(this.bearing * Math.PI / 180);
 			    	canvas.fillStyle = this.color;
-			    	canvas.fillRect(this.x, this.y, this.width, this.height);
+			    	canvas.fillRect(0, 0, this.width, this.height);
+			    	canvas.restore();
   				}
 			};
 
