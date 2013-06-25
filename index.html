@@ -1,141 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Title of the document</title>
+    <title>Title of the document</title>
 
-	<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
-	<script src="keyStatus.js"></script>
-	<script src="jquery.hotkeys.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+    <script src="keyStatus.js"></script>
+    <script src="jquery.hotkeys.js"></script>
 
-	<script>
+    <script>
 
-		$(document).ready(function() {
-
-
+        $(document).ready(function() {
 
 
-			var FPS = 60;
-
-			var turnSpeed = 2;
-
-			var engineAcceleration = 20;
-			var gravity = 10;
-
-			var canvasWidth = $(window).width();
-			var canvasHeight = $(window).height();
-
-			var canvasElement = $("<canvas width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
-			var canvas = canvasElement.get(0).getContext("2d");
-
-			canvasElement.appendTo('body');
-
-			/*Helper functions */
-
-			function degToRad (degrees) {
-				return degrees * Math.PI / 180;
-			}
+            var FPS = 30;
+            var gravity = 0.25;
 
 
-	
-			function update() {
-				
+            var canvasWidth = $(window).width();
+            var canvasHeight = $(window).height();
 
-				/* Infinite canvas */
+            var canvasElement = $("<canvas width='" + canvasWidth + "' height='" + canvasHeight + "'></canvas>");
+            var canvas = canvasElement.get(0).getContext("2d");
 
-				if (player.x > canvasWidth) {
-					player.x = 0;
-				}
+            canvasElement.appendTo('body');
 
-				if (player.x < 0) {
-					player.x = canvasWidth;
-				}
+            /*Helper functions */
 
-				/* Crash */ 
+            function degToRad (degrees) {
+                return degrees * Math.PI / 180;
+            }
+
+
+    
+            function update() {
+                
+
+                /* Infinite canvas */
+
+                if (player.x > canvasWidth) {
+                    player.x = 0;
+                }
+
+                if (player.x < 0) {
+                    player.x = canvasWidth;
+                }
+
+                /* Crash */ 
 
 
 
-				/* Forward motion */
+                /* Forward motion */
 
-				player.calculateAirSpeed();
+                player.calculateAirSpeed();
 
-				player.x += player.airSpeed * Math.cos(degToRad(player.bearing));
-				player.y += player.airSpeed * Math.sin(degToRad(player.bearing));
-
-
-				/* Keyboard inputs */
+                player.x += player.airSpeed * Math.cos(degToRad(player.bearing));
+                player.y += player.airSpeed * Math.sin(degToRad(player.bearing));
 
 
-				if (keydown.left) {
-    				player.bearing -= turnSpeed;
-  				}
-
-  				if (keydown.right) {
-  					player.bearing += turnSpeed;
-
-  				}
-
-  				if (player.bearing >= 360)
-  				{
-  					player.bearing = (player.bearing - 360) + 0;
-  				}
-
-  				else {
-  					if (player.bearing < 0)
-  					{
-  						player.bearing = player.bearing + 360;
-  					}
-  				}
-			}
-
-	
-			function draw() {
-  				canvas.clearRect(0, 0, canvasWidth, canvasHeight);
-  				player.draw();
-			}
-			
-			
-			setInterval(function() {
-				update();
-				draw();
-			}, 1000/FPS);
-
-			var player = {
-				color: "#00A",
-				x: 220,
-			  	y: 270,
-			  	bearing: 180,
-			  	airSpeed: 0,
-			  	width: 60,
-			  	height: 30,
-			  	calculateAirSpeed: function () {
-	  				/* v = u + (a * t) */
-					player.airSpeed  = player.airSpeed + 0.01;
-
-					if (player.y < 0 ) {
-						player.airSpeed = 0;
-					}},
-			  	draw: function() {
-			  		canvas.save();
-			  		canvas.translate(this.x, this.y);
-			  		canvas.translate(this.width, this.height);
-			  		canvas.rotate(this.bearing * Math.PI / 180);
-			    	canvas.fillStyle = this.color;
-			    	canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
-			    	canvas.restore();
-  				}
-			};
-
-		});
+                /* Keyboard inputs */
 
 
+                if (keydown.left) {
+                    player.bearing -= player.turnSpeed;
+                }
 
-	</script>
+                if (keydown.right) {
+                    player.bearing += player.turnSpeed;
 
-	<style type="text/css">
-		body {margin: 0;}
+                }
 
-		canvas {background: lightblue;}
-	</style>
+
+                if (player.bearing >= 360)
+                {
+                    player.bearing = (player.bearing - 360) + 0;
+                }
+
+                else {
+                    if (player.bearing < 0)
+                    {
+                        player.bearing = player.bearing + 360;
+                    }
+                }
+            }
+
+    
+            function draw() {
+                canvas.clearRect(0, 0, canvasWidth, canvasHeight);
+                player.draw();
+            }
+            
+            
+            setInterval(function() {
+                update();
+                draw();
+            }, 1000/FPS);
+
+            var player = {
+                color: "#00A",
+                x: 220,
+                y: 270,
+                bearing: 180,
+                airSpeed: 0,
+                turnSpeed: 1,
+                width: 60,
+                height: 30,
+                thrust: 0.5,
+                dragCoefficient : 0.1,
+                calculateDrag: function() {
+                    return (Math.abs(player.airSpeed * player.dragCoefficient));
+                },
+                netThrust: function () {
+
+                    var gravityComponent = gravity * Math.round(100 * Math.sin(degToRad(player.bearing)))/100;
+                    console.log(gravityComponent);
+                    return (player.thrust - player.calculateDrag() + gravityComponent);
+                },
+                calculateAirSpeed: function () {
+                    /* v = u + (a * t) */
+
+                    player.airSpeed  = player.airSpeed + player.netThrust();
+
+                    if (player.y < 0 ) {
+                        player.airSpeed = 0;
+                    }},
+
+                draw: function() {
+                    canvas.save();
+                    canvas.translate(this.x, this.y);
+                    canvas.translate(this.width, this.height);
+                    canvas.rotate(this.bearing * Math.PI / 180);
+                    canvas.fillStyle = this.color;
+                    canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
+                    canvas.restore();
+                }
+            };
+
+        });
+
+
+    </script>
+
+    <style type="text/css">
+        body {margin: 0;}
+
+        canvas {background: lightblue;}
+    </style>
 
 </head>
 
