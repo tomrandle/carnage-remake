@@ -76,9 +76,10 @@
 			  	draw: function() {
 			  		canvas.save();
 			  		canvas.translate(this.x, this.y);
+			  		canvas.translate(this.width, this.height);
 			  		canvas.rotate(this.bearing * Math.PI / 180);
 			    	canvas.fillStyle = this.color;
-			    	canvas.fillRect(0, 0, this.width, this.height);
+			    	canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
 			    	canvas.restore();
   				}
 			};
