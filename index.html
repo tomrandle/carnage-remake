@@ -17,7 +17,9 @@
 			var FPS = 60;
 
 			var turnSpeed = 2;
-			var normalSpeed = 5; 
+
+			var engineAcceleration = 20;
+			var gravity = 10;
 
 			var canvasWidth = $(window).width();
 			var canvasHeight = $(window).height();
@@ -34,22 +36,7 @@
 			}
 
 
-			function airSpeed() {
-
-
-
-
-
-				if (player.y < 0 ) {
-					return 0;
-				}
-
-				else {
-					return normalSpeed;
-				}
-			}
-
-
+	
 			function update() {
 				
 
@@ -69,8 +56,10 @@
 
 				/* Forward motion */
 
-				player.x += (airSpeed() * Math.cos(degToRad(player.bearing)));
-				player.y += (airSpeed() * Math.sin(degToRad(player.bearing)));
+				player.calculateAirSpeed();
+
+				player.x += player.airSpeed * Math.cos(degToRad(player.bearing));
+				player.y += player.airSpeed * Math.sin(degToRad(player.bearing));
 
 
 				/* Keyboard inputs */
@@ -96,8 +85,6 @@
   						player.bearing = player.bearing + 360;
   					}
   				}
-
-
 			}
 
 	
@@ -117,8 +104,16 @@
 				x: 220,
 			  	y: 270,
 			  	bearing: 180,
+			  	airSpeed: 0,
 			  	width: 60,
 			  	height: 30,
+			  	calculateAirSpeed: function () {
+	  				/* v = u + (a * t) */
+					player.airSpeed  = player.airSpeed + 0.01;
+
+					if (player.y < 0 ) {
+						player.airSpeed = 0;
+					}},
 			  	draw: function() {
 			  		canvas.save();
 			  		canvas.translate(this.x, this.y);
