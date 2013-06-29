@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Title of the document</title>
+    <title>Carnage remake</title>
 
     <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
     <script src="keyStatus.js"></script>
@@ -12,9 +12,12 @@
         $(document).ready(function() {
 
 
-            var FPS = 30;
-            var gravity = 0.25;
+            /* Set up */
 
+
+            var FPS = 30;
+            var g = 9.81;
+            var timeInterval = 1 / FPS;
 
             var canvasWidth = $(window).width();
             var canvasHeight = $(window).height();
@@ -24,13 +27,9 @@
 
             canvasElement.appendTo('body');
 
-            /*Helper functions */
-
-            function degToRad (degrees) {
-                return degrees * Math.PI / 180;
-            }
 
 
+            /* Each frame */
     
             function update() {
                 
@@ -45,40 +44,47 @@
                     player.x = canvasWidth;
                 }
 
+
+                if (player.y > canvasHeight) {
+                    player.y = 0;
+                }
+
+                if (player.y < 0) {
+                    player.y = canvasHeight;
+                }
+
+
                 /* Crash */ 
 
 
 
                 /* Forward motion */
 
-                player.calculateAirSpeed();
 
-                player.x += player.airSpeed * Math.cos(degToRad(player.bearing));
-                player.y += player.airSpeed * Math.sin(degToRad(player.bearing));
-
+                player.calculatePositions();
 
                 /* Keyboard inputs */
 
 
                 if (keydown.left) {
-                    player.bearing -= player.turnSpeed;
+                    player.planeDirection -= player.turnSpeed;
                 }
 
                 if (keydown.right) {
-                    player.bearing += player.turnSpeed;
+                    player.planeDirection += player.turnSpeed;
 
                 }
 
 
-                if (player.bearing >= 360)
+                if (player.planeDirection >= (2 * Math.PI))
                 {
-                    player.bearing = (player.bearing - 360) + 0;
+                    player.planeDirection = player.planeDirection - (2 * Math.PI);
                 }
 
                 else {
-                    if (player.bearing < 0)
+                    if (player.planeDirection < 0)
                     {
-                        player.bearing = player.bearing + 360;
+                        player.planeDirection = player.planeDirection + 2 * Math.PI;
                     }
                 }
             }
@@ -99,40 +105,61 @@
                 color: "#00A",
                 x: 220,
                 y: 270,
-                bearing: 180,
-                airSpeed: 0,
-                turnSpeed: 1,
-                width: 60,
-                height: 30,
-                thrust: 0.5,
-                dragCoefficient : 0.1,
+                planeDirection: Math.PI,
+                turnSpeed: Math.PI / 180,
+                xSpeed:0,
+                ySpeed:0,
+                width:100,
+                height:50,
+                mass:0.1, 
+                weight: 1, 
+                calculateLift: function() {
+                    return (this.weight);
+                },
+                thrust: 1,
                 calculateDrag: function() {
-                    return (Math.abs(player.airSpeed * player.dragCoefficient));
+                    return (0.1 * this.thrust);
                 },
-                netThrust: function () {
-
-                    var gravityComponent = gravity * Math.round(100 * Math.sin(degToRad(player.bearing)))/100;
-                    console.log(gravityComponent);
-                    return (player.thrust - player.calculateDrag() + gravityComponent);
+                calculateXAcceleration: function(){
+                    // ((F-D)cosC + L sin C ) / m;
+                    var aC = ((this.thrust - this.calculateDrag()) * Math.cos(this.planeDirection) - (this.calculateLift() * Math.sin(this.planeDirection))) / this.mass;
+                    console.log(aC);
+                    return(aC);
                 },
-                calculateAirSpeed: function () {
-                    /* v = u + (a * t) */
 
-                    player.airSpeed  = player.airSpeed + player.netThrust();
+                calculateYAcceleration: function(){
+                    // ((F-D)sinC + L cos C - W) / m;
+                    var a = ((this.thrust - this.calculateDrag()) * Math.sin(this.planeDirection) + (this.calculateLift() * Math.cos(this.planeDirection)) - this.weight) / this.mass;
+                    return(a);
+                },
 
-                    if (player.y < 0 ) {
-                        player.airSpeed = 0;
-                    }},
+                calculatePositions: function() {
+                    var aX = this.calculateYAcceleration();
+                    var aY = this.calculateXAcceleration();
 
+                    this.x += aX * timeInterval;
+                    this.y += aY * timeInterval;
+
+                },
+                airspeed: function() {
+                
+
+                    var v = (Math.sqrt(Math.pow(this.xSpeed,2) + Math.pow(this.ySpeed,2)));
+                    console.log(v);
+                    return(v);
+                },
                 draw: function() {
                     canvas.save();
                     canvas.translate(this.x, this.y);
                     canvas.translate(this.width, this.height);
-                    canvas.rotate(this.bearing * Math.PI / 180);
+                    canvas.rotate(this.planeDirection);
                     canvas.fillStyle = this.color;
                     canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
                     canvas.restore();
-                }
+                },
+        
+
+
             };
 
         });
@@ -144,11 +171,18 @@
         body {margin: 0;}
 
         canvas {background: lightblue;}
+        table {position: fixed; right:10px; top:10px; width: 100px;}
     </style>
 
 </head>
 
 <body>
+    <table id="data">
+        <tr>
+            <td>Bearing</td><td>10</td>
+        </tr>
+
+    </table>
 </body>
 
 </html>
