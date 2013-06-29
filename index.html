@@ -4,6 +4,7 @@
     <title>Carnage remake</title>
 
     <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+
     <script src="keyStatus.js"></script>
     <script src="jquery.hotkeys.js"></script>
 
@@ -111,8 +112,8 @@
                 ySpeed:0,
                 width:100,
                 height:50,
-                mass:0.1, 
-                weight: 1, 
+                mass:10, 
+                weight: 100, 
                 calculateLift: function() {
                     return (this.weight);
                 },
@@ -122,9 +123,8 @@
                 },
                 calculateXAcceleration: function(){
                     // ((F-D)cosC + L sin C ) / m;
-                    var aC = ((this.thrust - this.calculateDrag()) * Math.cos(this.planeDirection) - (this.calculateLift() * Math.sin(this.planeDirection))) / this.mass;
-                    console.log(aC);
-                    return(aC);
+                    var a = ((this.thrust - this.calculateDrag()) * Math.cos(this.planeDirection) - (this.calculateLift() * Math.sin(this.planeDirection))) / this.mass;
+                    return(a);
                 },
 
                 calculateYAcceleration: function(){
@@ -133,22 +133,51 @@
                     return(a);
                 },
 
-                calculatePositions: function() {
+
+                calculateSpeeds: function () {
                     var aX = this.calculateYAcceleration();
                     var aY = this.calculateXAcceleration();
 
-                    this.x += aX * timeInterval;
-                    this.y += aY * timeInterval;
+                    /* v = u + at */
+
+                    this.xSpeed = this.xSpeed + (aX * timeInterval);
+                    this.ySpeed = this.ySpeed + (aY * timeInterval);
+
+                },
+
+                calculatePositions: function() {
+                        
+                    this.calculateSpeeds();
+                    /* s = ut + 0.5 at^2*/
+                    /*BODGE*/
+
+                    this.x = this.x + (this.xSpeed * timeInterval);
+                    this.y = this.y + (this.ySpeed * timeInterval);
 
                 },
                 airspeed: function() {
-                
-
+                    this.calculateSpeeds();
                     var v = (Math.sqrt(Math.pow(this.xSpeed,2) + Math.pow(this.ySpeed,2)));
-                    console.log(v);
                     return(v);
                 },
+
+                updateReadings: function() {
+                    $('#bearing-value').html(this.planeDirection);
+                    $('#acceleration-x-value').html(this.calculateXAcceleration());
+                    $('#acceleration-y-value').html(this.calculateYAcceleration());
+                    $('#speed-x-value').html(this.xSpeed);
+                    $('#speed-y-value').html(this.ySpeed);
+                    $('#airspeed-value').html(this.airspeed());
+
+
+
+
+
+
+                },
                 draw: function() {
+
+                    this.updateReadings();
                     canvas.save();
                     canvas.translate(this.x, this.y);
                     canvas.translate(this.width, this.height);
@@ -179,7 +208,25 @@
 <body>
     <table id="data">
         <tr>
-            <td>Bearing</td><td>10</td>
+            <td>Bearing</td><td id="bearing-value"></td>
+        </tr>
+        <tr>
+            <td>aX</td><td id="acceleration-x-value"></td>
+        </tr>
+        <tr>
+            <td>aY</td><td id="acceleration-y-value"></td>
+
+        </tr>
+           <tr>
+            <td>vX</td><td id="speed-x-value"></td>
+        </tr>
+        <tr>
+            <td>vY</td><td id="speed-y-value"></td>
+
+        </tr>
+            <tr>
+            <td>vY</td><td id="airspeed-value"></td>
+
         </tr>
 
     </table>
