@@ -68,24 +68,24 @@
 
 
                 if (keydown.left) {
-                    player.planeDirection -= player.turnSpeed;
+                    player.angleOfAttack += player.turnSpeed;
                 }
 
                 if (keydown.right) {
-                    player.planeDirection += player.turnSpeed;
+                    player.angleOfAttack -= player.turnSpeed;
 
                 }
 
 
-                if (player.planeDirection >= (2 * Math.PI))
+                if (player.angleOfAttack >= (Math.PI))
                 {
-                    player.planeDirection = player.planeDirection - (2 * Math.PI);
+                    player.angleOfAttack = player.angleOfAttack - (Math.PI * 2);
                 }
 
                 else {
-                    if (player.planeDirection < 0)
+                    if (player.angleOfAttack <= - Math.PI)
                     {
-                        player.planeDirection = player.planeDirection + 2 * Math.PI;
+                        player.angleOfAttack = player.angleOfAttack + (2 * Math.PI);
                     }
                 }
             }
@@ -106,37 +106,60 @@
                 color: "#00A",
                 x: 220,
                 y: 270,
-                planeDirection: Math.PI,
+                angleOfAttack: 0,
                 turnSpeed: Math.PI / 180,
                 xSpeed:0,
                 ySpeed:0,
-                width:100,
-                height:50,
-                mass:10, 
-                weight: 100, 
+                width:50,
+                height:25,
+                mass:1,
+                weight: 10,
+                terminalVelocity:50, 
                 calculateLift: function() {
                     return (this.weight);
                 },
-                thrust: 1,
+                thrust: 10,
                 calculateDrag: function() {
-                    return (0.1 * this.thrust);
+                    var drag =  ((this.airspeed() * this.thrust) / (this.airspeed() + 3));
+                    return(drag)
                 },
                 calculateXAcceleration: function(){
                     // ((F-D)cosC + L sin C ) / m;
-                    var a = ((this.thrust - this.calculateDrag()) * Math.cos(this.planeDirection) - (this.calculateLift() * Math.sin(this.planeDirection))) / this.mass;
+                    var angle = this.angleOfAttack;
+
+                    var thrustComponent = this.thrust *  Math.cos(angle);
+                    var dragComponent = this.calculateDrag() * Math.cos(angle);
+                    var liftComponent = this.calculateLift() * Math.sin(angle);
+
+                    console.log('x thrust, drag, lift', thrustComponent,dragComponent,liftComponent);
+
+                    var a = (thrustComponent - dragComponent + liftComponent) / this.mass;
                     return(a);
                 },
 
                 calculateYAcceleration: function(){
                     // ((F-D)sinC + L cos C - W) / m;
-                    var a = ((this.thrust - this.calculateDrag()) * Math.sin(this.planeDirection) + (this.calculateLift() * Math.cos(this.planeDirection)) - this.weight) / this.mass;
+                    var angle = this.angleOfAttack;
+
+                    var thrustComponent = this.thrust *  Math.sin(angle);
+                    var dragComponent = this.calculateDrag() * Math.sin(angle);
+                    var liftComponent = this.calculateLift() * Math.cos(angle);
+
+                    console.log('y thrust, drag, lift',thrustComponent,dragComponent,liftComponent);
+
+
+
+                    var a = (thrustComponent - dragComponent + liftComponent - this.weight) /this.mass;
                     return(a);
+
+                    // var a = ((this.thrust - this.calculateDrag()) * Math.sin(angle) + (this.calculateLift() * Math.cos(angle)) - this.weight) / this.mass;
+                    // return(a);
                 },
 
 
                 calculateSpeeds: function () {
-                    var aX = this.calculateYAcceleration();
-                    var aY = this.calculateXAcceleration();
+                    var aX = this.calculateXAcceleration();
+                    var aY = this.calculateYAcceleration();
 
                     /* v = u + at */
 
@@ -156,49 +179,39 @@
 
                 },
                 airspeed: function() {
-                    this.calculateSpeeds();
                     var v = (Math.sqrt(Math.pow(this.xSpeed,2) + Math.pow(this.ySpeed,2)));
                     return(v);
                 },
 
                 updateReadings: function() {
-                    $('#bearing-value').html(this.planeDirection);
+                    $('#bearing-value').html(this.angleOfAttack * 180 / Math.PI);
                     $('#acceleration-x-value').html(this.calculateXAcceleration());
                     $('#acceleration-y-value').html(this.calculateYAcceleration());
                     $('#speed-x-value').html(this.xSpeed);
                     $('#speed-y-value').html(this.ySpeed);
+                    $('#x-value').html(this.x);
+                    $('#y-value').html(this.y);
                     $('#airspeed-value').html(this.airspeed());
-
-
-
-
-
+                    $('#drag-value').html(this.calculateDrag());
 
                 },
                 draw: function() {
-
                     this.updateReadings();
                     canvas.save();
-                    canvas.translate(this.x, this.y);
+                    canvas.translate(this.x, (canvasHeight - this.y));
                     canvas.translate(this.width, this.height);
-                    canvas.rotate(this.planeDirection);
+                    canvas.rotate(-this.angleOfAttack);
                     canvas.fillStyle = this.color;
                     canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
                     canvas.restore();
                 },
-        
-
-
             };
-
         });
-
 
     </script>
 
     <style type="text/css">
         body {margin: 0;}
-
         canvas {background: lightblue;}
         table {position: fixed; right:10px; top:10px; width: 100px;}
     </style>
@@ -209,6 +222,13 @@
     <table id="data">
         <tr>
             <td>Bearing</td><td id="bearing-value"></td>
+        </tr>
+        <tr>
+            <td>X</td><td id="x-value"></td>
+        </tr>
+        <tr>
+            <td>Y</td><td id="y-value"></td>
+
         </tr>
         <tr>
             <td>aX</td><td id="acceleration-x-value"></td>
@@ -225,7 +245,11 @@
 
         </tr>
             <tr>
-            <td>vY</td><td id="airspeed-value"></td>
+            <td>Speed</td><td id="airspeed-value"></td>
+
+        </tr>
+                 <tr>
+            <td>Drag</td><td id="drag-value"></td>
 
         </tr>
 
