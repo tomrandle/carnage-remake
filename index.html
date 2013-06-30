@@ -114,14 +114,20 @@
                 height:25,
                 mass:1,
                 weight: 10,
-                terminalVelocity:50, 
+                terminalVelocity:50,
+                dragCoefficient: 0.1,
                 calculateLift: function() {
-                    return (this.weight);
+                    var liftCoefficient = 0.1;
+                    if (Math.abs(this.angleOfAttack > Math.PI / 4 &&  this.angleOfAttack < (Math.PI * 3 / 4)) ){
+                        liftCoefficient = 0;
+                    } 
+                    var lift = liftCoefficient * this.airspeed() * this.airspeed();
+                    return (lift);
                 },
                 thrust: 10,
                 calculateDrag: function() {
-                    var drag =  ((this.airspeed() * this.thrust) / (this.airspeed() + 3));
-                    return(drag)
+                    var drag = this.dragCoefficient * this.airspeed() * this.airspeed();
+                    return(drag);
                 },
                 calculateXAcceleration: function(){
                     // ((F-D)cosC + L sin C ) / m;
@@ -131,7 +137,10 @@
                     var dragComponent = this.calculateDrag() * Math.cos(angle);
                     var liftComponent = this.calculateLift() * Math.sin(angle);
 
-                    console.log('x thrust, drag, lift', thrustComponent,dragComponent,liftComponent);
+                    $('#thrust-x-value').html(thrustComponent);
+                    $('#drag-x-value').html(dragComponent);
+                    $('#lift-x-value').html(liftComponent);
+
 
                     var a = (thrustComponent - dragComponent + liftComponent) / this.mass;
                     return(a);
@@ -144,10 +153,6 @@
                     var thrustComponent = this.thrust *  Math.sin(angle);
                     var dragComponent = this.calculateDrag() * Math.sin(angle);
                     var liftComponent = this.calculateLift() * Math.cos(angle);
-
-                    console.log('y thrust, drag, lift',thrustComponent,dragComponent,liftComponent);
-
-
 
                     var a = (thrustComponent - dragComponent + liftComponent - this.weight) /this.mass;
                     return(a);
@@ -213,45 +218,31 @@
     <style type="text/css">
         body {margin: 0;}
         canvas {background: lightblue;}
-        table {position: fixed; right:10px; top:10px; width: 100px;}
+        table {position: fixed; right:10px; top:10px; width: 200px;}
     </style>
 
 </head>
 
 <body>
     <table id="data">
-        <tr>
-            <td>Bearing</td><td id="bearing-value"></td>
-        </tr>
-        <tr>
-            <td>X</td><td id="x-value"></td>
-        </tr>
-        <tr>
-            <td>Y</td><td id="y-value"></td>
+        <tr><td>Bearing</td><td id="bearing-value"></td></tr>
+        <tr><td>X</td><td id="x-value"></td></tr>
+        <tr><td>Y</td><td id="y-value"></td></tr>
+        <tr><td>aX</td><td id="acceleration-x-value"></td></tr>
+        <tr><td>aY</td><td id="acceleration-y-value"></td></tr>
+        <tr><td>vX</td><td id="speed-x-value"></td></tr>
+        <tr><td>vY</td><td id="speed-y-value"></td></tr>
 
-        </tr>
-        <tr>
-            <td>aX</td><td id="acceleration-x-value"></td>
-        </tr>
-        <tr>
-            <td>aY</td><td id="acceleration-y-value"></td>
+        <tr><td>ThrustX</td><td id="thrust-x-value"></td></tr>
+        <tr><td>Y</td><td id="thrust-y-value"></td></tr>
+        <tr><td>LiftX</td><td id="lift-x-value"></td></tr>
+        <tr><td>LifY</td><td id="lift-y-value"></td></tr>
+        <tr><td>DragX</td><td id="drag-x-value"></td></tr>
+        <tr><td>DragY</td><td id="drag-y-value"></td></tr>
 
-        </tr>
-           <tr>
-            <td>vX</td><td id="speed-x-value"></td>
-        </tr>
-        <tr>
-            <td>vY</td><td id="speed-y-value"></td>
+        <tr><td>Speed</td><td id="airspeed-value"></td></tr>
+        <tr><td>Drag</td><td id="drag-value"></td></tr>
 
-        </tr>
-            <tr>
-            <td>Speed</td><td id="airspeed-value"></td>
-
-        </tr>
-                 <tr>
-            <td>Drag</td><td id="drag-value"></td>
-
-        </tr>
 
     </table>
 </body>
