@@ -94,6 +94,7 @@
             function draw() {
                 canvas.clearRect(0, 0, canvasWidth, canvasHeight);
                 player.draw();
+                player.drawForceVectors();
             }
             
             
@@ -113,29 +114,33 @@
                 width:50,
                 height:25,
                 mass:1,
-                weight: 10,
+                weight: 0,
                 terminalVelocity:50,
-                dragCoefficient: 0.1,
-                calculateLift: function() {
-                    var liftCoefficient = 0.1;
-                    if (Math.abs(this.angleOfAttack > Math.PI / 4 &&  this.angleOfAttack < (Math.PI * 3 / 4)) ){
-                        liftCoefficient = 0;
-                    } 
-                    var lift = liftCoefficient * this.airspeed() * this.airspeed();
-                    return (lift);
-                },
+                dragCoefficient: 0.01,
                 thrust: 10,
+
+                calculateLift: function() {
+                    // var liftCoefficient = 0.1;
+                    // if (Math.abs(this.angleOfAttack > Math.PI / 4 &&  this.angleOfAttack < (Math.PI * 3 / 4)) ){
+                    //     liftCoefficient = 0;
+                    // } 
+                    // var lift = liftCoefficient * this.airspeed() * this.airspeed();
+                    // return (lift);
+
+                    return (0);
+                },
+
                 calculateDrag: function() {
                     var drag = this.dragCoefficient * this.airspeed() * this.airspeed();
                     return(drag);
                 },
+
                 calculateXAcceleration: function(){
                     // ((F-D)cosC + L sin C ) / m;
-                    var angle = this.angleOfAttack;
 
-                    var thrustComponent = this.thrust *  Math.cos(angle);
-                    var dragComponent = this.calculateDrag() * Math.cos(angle);
-                    var liftComponent = this.calculateLift() * Math.sin(angle);
+                    var thrustComponent = this.thrust *  Math.cos(this.angleOfAttack);
+                    var dragComponent = this.calculateDrag() * Math.cos(this.calculateAngleOfMotion());
+                    var liftComponent = this.calculateLift() * Math.sin(this.angleOfAttack);
 
                     $('#thrust-x-value').html(thrustComponent);
                     $('#drag-x-value').html(dragComponent);
@@ -148,11 +153,10 @@
 
                 calculateYAcceleration: function(){
                     // ((F-D)sinC + L cos C - W) / m;
-                    var angle = this.angleOfAttack;
 
-                    var thrustComponent = this.thrust *  Math.sin(angle);
-                    var dragComponent = this.calculateDrag() * Math.sin(angle);
-                    var liftComponent = this.calculateLift() * Math.cos(angle);
+                    var thrustComponent = this.thrust *  Math.sin(this.angleOfAttack);
+                    var dragComponent = this.calculateDrag() * Math.sin(this.calculateAngleOfMotion());
+                    var liftComponent = this.calculateLift() * Math.cos(this.angleOfAttack);
 
                     var a = (thrustComponent - dragComponent + liftComponent - this.weight) /this.mass;
                     return(a);
@@ -183,9 +187,24 @@
                     this.y = this.y + (this.ySpeed * timeInterval);
 
                 },
+
                 airspeed: function() {
                     var v = (Math.sqrt(Math.pow(this.xSpeed,2) + Math.pow(this.ySpeed,2)));
                     return(v);
+                },
+
+                calculateAngleOfMotion: function() {
+
+                    var angle = Math.atan(this.ySpeed / this.xSpeed);
+
+                    if (angle) {
+                        return(angle);
+                    }
+                    else 
+                    {
+                        return (0);
+                    }
+
                 },
 
                 updateReadings: function() {
@@ -210,6 +229,63 @@
                     canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
                     canvas.restore();
                 },
+
+                drawForceVectors: function() {
+
+                    var lineScale = 5;
+                    var currentX = this.x + this.width;
+                    var currentY = canvasHeight - this.y + this.height;
+
+
+                    /* Weight */
+
+                    var weightLineEndX = (this.weight * lineScale) + currentY;
+
+                    canvas.beginPath();
+                    canvas.moveTo(currentX, currentY);
+                    canvas.lineTo(currentX,weightLineEndX);
+                    canvas.stroke();
+
+                    /* Lift */
+                    
+                    var liftLineEndX = (Math.sin(-this.angleOfAttack) * this.calculateLift() * lineScale) + currentX;
+                    var liftLineEndY = -(Math.cos(-this.angleOfAttack) * this.calculateLift() * lineScale) + currentY;
+
+
+                    canvas.beginPath();
+                    canvas.moveTo(currentX, currentY);
+                    canvas.lineTo(liftLineEndX,liftLineEndY);
+                    canvas.stroke();
+
+
+                    /* Thrust */
+                    
+                    var thrustLineEndX = (Math.cos(this.angleOfAttack) * this.thrust * lineScale) + currentX;
+                    var thrustLineEndY = (Math.sin(-this.angleOfAttack) * this.thrust * lineScale) + currentY;
+
+                    canvas.beginPath();
+                    canvas.moveTo(currentX, currentY);
+                    canvas.lineTo(thrustLineEndX,thrustLineEndY);
+                    canvas.stroke();
+
+                    /* Drag */
+
+                    var drag = this.calculateDrag();
+                    
+                    var dragLineEndX = -(Math.cos(this.angleOfAttack) * drag * lineScale) + currentX;
+                    var dragLineEndY = (Math.sin(this.angleOfAttack) * drag * lineScale) + currentY;
+
+
+                    canvas.beginPath();
+                    canvas.moveTo(currentX, currentY);
+                    canvas.lineTo(dragLineEndX,dragLineEndY);
+                    canvas.stroke();
+
+
+
+
+
+                }
             };
         });
 
@@ -236,7 +312,7 @@
         <tr><td>ThrustX</td><td id="thrust-x-value"></td></tr>
         <tr><td>Y</td><td id="thrust-y-value"></td></tr>
         <tr><td>LiftX</td><td id="lift-x-value"></td></tr>
-        <tr><td>LifY</td><td id="lift-y-value"></td></tr>
+        <tr><td>LiftY</td><td id="lift-y-value"></td></tr>
         <tr><td>DragX</td><td id="drag-x-value"></td></tr>
         <tr><td>DragY</td><td id="drag-y-value"></td></tr>
 
