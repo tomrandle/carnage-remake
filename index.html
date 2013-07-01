@@ -140,7 +140,7 @@
 
                     var thrustComponent = this.thrust *  Math.cos(this.angleOfAttack);
                     var dragComponent = this.calculateDrag() * Math.cos(this.calculateAngleOfMotion());
-                    var liftComponent = this.calculateLift() * Math.sin(this.angleOfAttack);
+                    var liftComponent =this.calculateLift() * Math.sin(this.angleOfAttack);
 
                     $('#thrust-x-value').html(thrustComponent);
                     $('#drag-x-value').html(dragComponent);
@@ -158,11 +158,15 @@
                     var dragComponent = this.calculateDrag() * Math.sin(this.calculateAngleOfMotion());
                     var liftComponent = this.calculateLift() * Math.cos(this.angleOfAttack);
 
+
+                    $('#thrust-y-value').html(thrustComponent);
+                    $('#drag-y-value').html(dragComponent);
+                    $('#lift-y-value').html(liftComponent);
                     var a = (thrustComponent - dragComponent + liftComponent - this.weight) /this.mass;
                     return(a);
 
-                    // var a = ((this.thrust - this.calculateDrag()) * Math.sin(angle) + (this.calculateLift() * Math.cos(angle)) - this.weight) / this.mass;
-                    // return(a);
+                    
+           
                 },
 
 
@@ -209,6 +213,8 @@
 
                 updateReadings: function() {
                     $('#bearing-value').html(this.angleOfAttack * 180 / Math.PI);
+                    $('#angle-of-motion-value').html(this.calculateAngleOfMotion() * 180 / Math.PI);
+
                     $('#acceleration-x-value').html(this.calculateXAcceleration());
                     $('#acceleration-y-value').html(this.calculateYAcceleration());
                     $('#speed-x-value').html(this.xSpeed);
@@ -302,6 +308,8 @@
 <body>
     <table id="data">
         <tr><td>Bearing</td><td id="bearing-value"></td></tr>
+        <tr><td>Angle of motion</td><td id="angle-of-motion-value"></td></tr>
+
         <tr><td>X</td><td id="x-value"></td></tr>
         <tr><td>Y</td><td id="y-value"></td></tr>
         <tr><td>aX</td><td id="acceleration-x-value"></td></tr>
@@ -310,7 +318,7 @@
         <tr><td>vY</td><td id="speed-y-value"></td></tr>
 
         <tr><td>ThrustX</td><td id="thrust-x-value"></td></tr>
-        <tr><td>Y</td><td id="thrust-y-value"></td></tr>
+        <tr><td>ThrustY</td><td id="thrust-y-value"></td></tr>
         <tr><td>LiftX</td><td id="lift-x-value"></td></tr>
         <tr><td>LiftY</td><td id="lift-y-value"></td></tr>
         <tr><td>DragX</td><td id="drag-x-value"></td></tr>
