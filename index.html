@@ -32,7 +32,7 @@
 
             /* Create players */ 
 
-            var player1  = new player('#333');
+            var player1  = new player('#333', 'left', 'right','space');
 
 
 
@@ -45,33 +45,7 @@
                 player1.calculatePositions();
 
 
-                /* Keyboard inputs */
-
-                if (keydown.left) {
-                    player1.angleOfAttack += player1.turnSpeed;
-                }
-
-                if (keydown.right) {
-                    player1.angleOfAttack -= player1.turnSpeed;
-
-                }
-
-                if (keydown.space) {
-                    console.log('fire');
-                }
-
-
-                if (player1.angleOfAttack >= (Math.PI))
-                {
-                    player1.angleOfAttack = player1.angleOfAttack - (Math.PI * 2);
-                }
-
-                else {
-                    if (player1.angleOfAttack <= - Math.PI)
-                    {
-                        player1.angleOfAttack = player1.angleOfAttack + (2 * Math.PI);
-                    }
-                }
+  
             }
 
     
@@ -107,11 +81,11 @@
                 },
             };
 
-            function player(color) {
+            function player(color, rotateAnticlockwiseKey, rotateClockwiseKey, shootKey, startPosition) {
                 this.color = color;
-                this.rotateAnticlockwiseKey = 'left';
-                this.rotateClockwiseKey = 'right';
-                this.shootKey = 'space';
+                this.rotateAnticlockwiseKey = rotateAnticlockwiseKey;
+                this.rotateClockwiseKey = rotateClockwiseKey;
+                this.shootKey = shootKey;
                 this.bullets = 2;
                 this.kills = 0;
                 this.lives = 10;
@@ -132,6 +106,41 @@
                 this.fire = function() {
                     console.log('player fired');
                 };
+
+
+                this.checkKeyboard = function() {
+
+                    if (keydown.left) {
+                        player1.angleOfAttack += player1.turnSpeed;
+                    }
+
+                    if (keydown.right) {
+                        player1.angleOfAttack -= player1.turnSpeed;
+
+                    }
+
+                    if (keydown.space) {
+                        console.log('fire');
+                    }
+
+
+                    if (player1.angleOfAttack >= (Math.PI))
+                    {
+                        player1.angleOfAttack = player1.angleOfAttack - (Math.PI * 2);
+                    }
+
+                    else {
+                        if (player1.angleOfAttack <= - Math.PI)
+                        {
+                            player1.angleOfAttack = player1.angleOfAttack + (2 * Math.PI);
+                        }
+                    }
+
+                };
+
+
+
+
                 this.calculateLift = function() {
                     
                     // var angle = this.calculateAngleOfMotion();
@@ -193,6 +202,7 @@
 
 
                 this.calculateSpeeds = function () {
+
                     var aX = this.calculateXAcceleration();
                     var aY = this.calculateYAcceleration();
 
@@ -204,7 +214,7 @@
                 };
 
                 this.calculatePositions = function() {
-                        
+                    this.checkKeyboard(); //make sure this only gets called once
                     this.calculateSpeeds();
 
                     /* Infinite canvas */
