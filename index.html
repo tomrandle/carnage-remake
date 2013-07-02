@@ -32,30 +32,27 @@
 
             /* Create players */ 
 
+            var player1  = new player('#333');
+
 
 
             /* Each frame */
     
             function update() {
-                
 
-   
+                /* TODO: Need this to run for each player */
 
-                /* Crash */ 
-
-                /* Forward motion */
-
-                player.calculatePositions();
+                player1.calculatePositions();
 
 
                 /* Keyboard inputs */
 
                 if (keydown.left) {
-                    player.angleOfAttack += player.turnSpeed;
+                    player1.angleOfAttack += player1.turnSpeed;
                 }
 
                 if (keydown.right) {
-                    player.angleOfAttack -= player.turnSpeed;
+                    player1.angleOfAttack -= player1.turnSpeed;
 
                 }
 
@@ -64,15 +61,15 @@
                 }
 
 
-                if (player.angleOfAttack >= (Math.PI))
+                if (player1.angleOfAttack >= (Math.PI))
                 {
-                    player.angleOfAttack = player.angleOfAttack - (Math.PI * 2);
+                    player1.angleOfAttack = player1.angleOfAttack - (Math.PI * 2);
                 }
 
                 else {
-                    if (player.angleOfAttack <= - Math.PI)
+                    if (player1.angleOfAttack <= - Math.PI)
                     {
-                        player.angleOfAttack = player.angleOfAttack + (2 * Math.PI);
+                        player1.angleOfAttack = player1.angleOfAttack + (2 * Math.PI);
                     }
                 }
             }
@@ -80,8 +77,8 @@
     
             function draw() {
                 canvas.clearRect(0, 0, canvasWidth, canvasHeight);
-                player.draw();
-                player.drawForceVectors();
+                player1.draw();
+                player1.drawForceVectors();
             }
             
             
@@ -110,34 +107,32 @@
                 },
             };
 
-            var player = {
-                color: "#00A",
-                rotateAnticlockwiseKey: 'left',
-                rotateClockwiseKey:'right',
-                shootKey:'space',
-                bullets: 2,
-                kills: 0,
-                lives: 10,
-                takeOffPosition:1,
-                x: 220,
-                y: 270,
-                angleOfAttack: 0,
-                turnSpeed: Math.PI / 32,
-                xSpeed:0,
-                ySpeed:0,
-                width:40,
-                height:20,
-                mass:100,
-                weight: 0,
-                terminalVelocity:50,
-                dragCoefficient: 0.1,
-                thrust: 600,
-
-                fire: function() {
+            function player(color) {
+                this.color = color;
+                this.rotateAnticlockwiseKey = 'left';
+                this.rotateClockwiseKey = 'right';
+                this.shootKey = 'space';
+                this.bullets = 2;
+                this.kills = 0;
+                this.lives = 10;
+                this.takeOffPosition = 1;
+                this.x = 220;
+                this.y = 270;
+                this.angleOfAttack= 0;
+                this.turnSpeed= Math.PI / 32;
+                this.xSpeed=0;
+                this.ySpeed=0;
+                this.width=40;
+                this.height=20;
+                this.mass=100;
+                this.weight= 0;
+                this.terminalVelocity=50;
+                this.dragCoefficient= 0.1;
+                this.thrust= 600;
+                this.fire = function() {
                     console.log('player fired');
-                },
-
-                calculateLift: function() {
+                };
+                this.calculateLift = function() {
                     
                     // var angle = this.calculateAngleOfMotion();
 
@@ -152,17 +147,17 @@
                     // var lift = liftCoefficient * this.airspeed() * this.airspeed();
                     return (0);
 
-                },
+                };
 
-                calculateDrag: function() {
+                this.calculateDrag = function() {
 
                     // To be realisitc the drag and lift coefficients need to change depending on the direction the plane is pointing. Drag needs to be much more agressive in the direction perpendicular to the bearing of the plane. 
 
                     var drag = this.dragCoefficient * this.airspeed() * this.airspeed();
                     return(drag);
-                },
+                };
 
-                calculateXAcceleration: function(){
+                this.calculateXAcceleration = function(){
                     // ((F-D)cosC + L sin C ) / m;
 
                     var thrustComponent = this.thrust *  Math.cos(this.angleOfAttack);
@@ -176,9 +171,9 @@
 
                     var a = (thrustComponent - dragComponent + liftComponent) / this.mass;
                     return(a);
-                },
+                };
 
-                calculateYAcceleration: function(){
+                this.calculateYAcceleration = function(){
                     // ((F-D)sinC + L cos C - W) / m;
 
                     var thrustComponent = this.thrust *  Math.sin(this.angleOfAttack);
@@ -194,10 +189,10 @@
 
                     
            
-                },
+                };
 
 
-                calculateSpeeds: function () {
+                this.calculateSpeeds = function () {
                     var aX = this.calculateXAcceleration();
                     var aY = this.calculateYAcceleration();
 
@@ -206,9 +201,9 @@
                     this.xSpeed = this.xSpeed + (aX * timeInterval);
                     this.ySpeed = this.ySpeed + (aY * timeInterval);
 
-                },
+                };
 
-                calculatePositions: function() {
+                this.calculatePositions = function() {
                         
                     this.calculateSpeeds();
 
@@ -237,17 +232,17 @@
                     this.x = this.x + (this.xSpeed * timeInterval);
                     this.y = this.y + (this.ySpeed * timeInterval);
 
-                    },
+                    };
 
 
        
 
-                airspeed: function() {
+                this.airspeed = function() {
                     var v = (Math.sqrt(Math.pow(this.xSpeed,2) + Math.pow(this.ySpeed,2)));
                     return(v);
-                },
+                };
 
-                calculateAngleOfMotion: function() {
+                this.calculateAngleOfMotion = function() {
 
                     var angle = Math.atan(this.ySpeed / this.xSpeed);
                         if (!angle) {
@@ -267,9 +262,9 @@
                 
                     return (angle);
 
-                },
+                };
 
-                updateReadings: function() {
+                this.updateReadings = function() {
                     $('#bearing-value').html(this.angleOfAttack * 180 / Math.PI);
                     $('#angle-of-motion-value').html(this.calculateAngleOfMotion() * 180 / Math.PI);
 
@@ -282,8 +277,9 @@
                     $('#airspeed-value').html(this.airspeed());
                     $('#drag-value').html(this.calculateDrag());
 
-                },
-                draw: function() {
+                };
+
+                this.draw = function() {
                     this.updateReadings();
                     canvas.save();
                     canvas.translate(this.x, (canvasHeight - this.y));
@@ -292,9 +288,9 @@
                     canvas.fillStyle = this.color;
                     canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
                     canvas.restore();
-                },
+                };
 
-                drawForceVectors: function() {
+                this.drawForceVectors = function() {
 
                     var lineScale = 1;
                     var currentX = this.x + this.width;
