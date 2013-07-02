@@ -105,29 +105,41 @@
 
             var player = {
                 color: "#00A",
+                rotateAnticlockwiseKey: 'left',
+                rotateClockwiseKey:'right',
+                bullets: 2,
+                kills: 0,
+                lives: 10,
+                takeOffPosition:1,
                 x: 220,
                 y: 270,
                 angleOfAttack: 0,
-                turnSpeed: Math.PI / 180,
+                turnSpeed: Math.PI / 32,
                 xSpeed:0,
                 ySpeed:0,
-                width:50,
-                height:25,
-                mass:1,
+                width:40,
+                height:20,
+                mass:100,
                 weight: 0,
                 terminalVelocity:50,
-                dragCoefficient: 0.01,
-                thrust: 10,
+                dragCoefficient: 0.1,
+                thrust: 600,
 
                 calculateLift: function() {
-                    // var liftCoefficient = 0.1;
-                    // if (Math.abs(this.angleOfAttack > Math.PI / 4 &&  this.angleOfAttack < (Math.PI * 3 / 4)) ){
-                    //     liftCoefficient = 0;
-                    // } 
-                    // var lift = liftCoefficient * this.airspeed() * this.airspeed();
-                    // return (lift);
+                    
+                    // var angle = this.calculateAngleOfMotion();
 
+                    //                     var liftCoefficient = 0.1;
+
+
+                    // if (Math.abs(angle) > Math.PI /2 ) {
+                    //     liftCoefficient = 0;
+                    // }
+
+                   
+                    // var lift = liftCoefficient * this.airspeed() * this.airspeed();
                     return (0);
+
                 },
 
                 calculateDrag: function() {
@@ -140,7 +152,7 @@
 
                     var thrustComponent = this.thrust *  Math.cos(this.angleOfAttack);
                     var dragComponent = this.calculateDrag() * Math.cos(this.calculateAngleOfMotion());
-                    var liftComponent =this.calculateLift() * Math.sin(this.angleOfAttack);
+                    var liftComponent =this.calculateLift() * Math.sin(this.calculateAngleOfMotion());
 
                     $('#thrust-x-value').html(thrustComponent);
                     $('#drag-x-value').html(dragComponent);
@@ -156,7 +168,7 @@
 
                     var thrustComponent = this.thrust *  Math.sin(this.angleOfAttack);
                     var dragComponent = this.calculateDrag() * Math.sin(this.calculateAngleOfMotion());
-                    var liftComponent = this.calculateLift() * Math.cos(this.angleOfAttack);
+                    var liftComponent = this.calculateLift() * Math.cos(this.calculateAngleOfMotion());
 
 
                     $('#thrust-y-value').html(thrustComponent);
@@ -246,7 +258,7 @@
 
                 drawForceVectors: function() {
 
-                    var lineScale = 5;
+                    var lineScale = 1;
                     var currentX = this.x + this.width;
                     var currentY = canvasHeight - this.y + this.height;
 
@@ -265,12 +277,10 @@
                     var liftLineEndX = (Math.sin(-this.angleOfAttack) * this.calculateLift() * lineScale) + currentX;
                     var liftLineEndY = -(Math.cos(-this.angleOfAttack) * this.calculateLift() * lineScale) + currentY;
 
-
                     canvas.beginPath();
                     canvas.moveTo(currentX, currentY);
                     canvas.lineTo(liftLineEndX,liftLineEndY);
                     canvas.stroke();
-
 
                     /* Thrust */
                     
@@ -286,18 +296,14 @@
 
                     var drag = this.calculateDrag();
                     
-                    var dragLineEndX = -(Math.cos(this.angleOfAttack) * drag * lineScale) + currentX;
-                    var dragLineEndY = (Math.sin(this.angleOfAttack) * drag * lineScale) + currentY;
+                    var dragLineEndX = -(Math.cos(this.calculateAngleOfMotion()) * drag * lineScale) + currentX;
+                    var dragLineEndY = (Math.sin(this.calculateAngleOfMotion()) * drag * lineScale) + currentY;
 
 
                     canvas.beginPath();
                     canvas.moveTo(currentX, currentY);
                     canvas.lineTo(dragLineEndX,dragLineEndY);
                     canvas.stroke();
-
-
-
-
 
                 }
             };
@@ -306,7 +312,7 @@
     </script>
 
     <style type="text/css">
-        body {margin: 0;}
+        body {margin: 0; font-family:arial; font-size:11px;}
         canvas {background: lightblue;}
         table {position: fixed; right:10px; top:10px; width: 200px;}
     </style>
