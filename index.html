@@ -13,12 +13,13 @@
         $(document).ready(function() {
 
 
-            /* Set up */
-
+            /* Variables */
 
             var FPS = 30;
-            var g = 9.81;
+            var g = 10;
             var timeInterval = 1 / FPS;
+
+            /* Create canvas */
 
             var canvasWidth = $(window).width();
             var canvasHeight = $(window).height();
@@ -29,43 +30,25 @@
             canvasElement.appendTo('body');
 
 
+            /* Create players */ 
+
+
 
             /* Each frame */
     
             function update() {
                 
 
-                /* Infinite canvas */
-
-                if (player.x > canvasWidth) {
-                    player.x = 0;
-                }
-
-                if (player.x < 0) {
-                    player.x = canvasWidth;
-                }
-
-
-                if (player.y > canvasHeight) {
-                    player.y = 0;
-                }
-
-                if (player.y < 0) {
-                    player.y = canvasHeight;
-                }
-
+   
 
                 /* Crash */ 
 
-
-
                 /* Forward motion */
-
 
                 player.calculatePositions();
 
-                /* Keyboard inputs */
 
+                /* Keyboard inputs */
 
                 if (keydown.left) {
                     player.angleOfAttack += player.turnSpeed;
@@ -74,6 +57,10 @@
                 if (keydown.right) {
                     player.angleOfAttack -= player.turnSpeed;
 
+                }
+
+                if (keydown.space) {
+                    console.log('fire');
                 }
 
 
@@ -103,10 +90,31 @@
                 draw();
             }, 1000/FPS);
 
+
+            var bullet = {
+                speed: 100, //needs to be about twice the maximum speed of the plane?
+                x: 0,
+                y: 0,
+                sourceX: 0, 
+                sourceY: 0,
+                angle: 0, 
+                position: 0,
+                owner: 0, 
+
+                updateReadings: function() {
+                    console.log('update bullet readings');
+                },
+
+                draw: function() {
+                     console.log('draw bullet');
+                },
+            };
+
             var player = {
                 color: "#00A",
                 rotateAnticlockwiseKey: 'left',
                 rotateClockwiseKey:'right',
+                shootKey:'space',
                 bullets: 2,
                 kills: 0,
                 lives: 10,
@@ -125,11 +133,15 @@
                 dragCoefficient: 0.1,
                 thrust: 600,
 
+                fire: function() {
+                    console.log('player fired');
+                },
+
                 calculateLift: function() {
                     
                     // var angle = this.calculateAngleOfMotion();
 
-                    //                     var liftCoefficient = 0.1;
+                    // var liftCoefficient = 0.1;
 
 
                     // if (Math.abs(angle) > Math.PI /2 ) {
@@ -143,6 +155,9 @@
                 },
 
                 calculateDrag: function() {
+
+                    // To be realisitc the drag and lift coefficients need to change depending on the direction the plane is pointing. Drag needs to be much more agressive in the direction perpendicular to the bearing of the plane. 
+
                     var drag = this.dragCoefficient * this.airspeed() * this.airspeed();
                     return(drag);
                 },
@@ -196,13 +211,36 @@
                 calculatePositions: function() {
                         
                     this.calculateSpeeds();
+
+                    /* Infinite canvas */
+
+                    if (this.x > canvasWidth) {
+                        this.x = 0;
+                    }
+
+                    if (this.x < 0) {
+                        this.x = canvasWidth;
+                    }
+
+
+                    if (this.y > canvasHeight) {
+                        this.y = 0;
+                    }
+
+                    if (this.y < 0) {
+                        this.y = canvasHeight;
+                    }
+
                     /* s = ut + 0.5 at^2*/
                     /*BODGE*/
 
                     this.x = this.x + (this.xSpeed * timeInterval);
                     this.y = this.y + (this.ySpeed * timeInterval);
 
-                },
+                    },
+
+
+       
 
                 airspeed: function() {
                     var v = (Math.sqrt(Math.pow(this.xSpeed,2) + Math.pow(this.ySpeed,2)));
