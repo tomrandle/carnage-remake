@@ -18,6 +18,7 @@
             var FPS = 30;
             var g = 10;
             var timeInterval = 1 / FPS;
+            var bullets = [];
 
             /* Create canvas */
 
@@ -32,7 +33,7 @@
 
             /* Create players */ 
 
-            var player1  = new player('#333', 'left', 'right','space');
+            var player1  = new player(1,'#333', 'left', 'right','space');
 
 
 
@@ -43,9 +44,11 @@
                 /* TODO: Need this to run for each player */
 
                 player1.calculatePositions();
+                console.log(bullets.length);
 
-
-  
+                for (var i=0;i<bullets.length;i++) {
+                    console.log(bullets[i].sourceX);
+                }
             }
 
     
@@ -62,31 +65,29 @@
             }, 1000/FPS);
 
 
-            var bullet = {
-                speed: 100, //needs to be about twice the maximum speed of the plane?
-                x: 0,
-                y: 0,
-                sourceX: 0, 
-                sourceY: 0,
-                angle: 0, 
-                position: 0,
-                owner: 0, 
-
-                updateReadings: function() {
+            function bullet(sourceX) {
+                this.speed = 100; //needs to be about twice the maximum speed of the plane?
+                this.x = 0;
+                this.y = 0;
+                this.sourceX = sourceX; 
+                this.sourceY = 0;
+                this.angle = 0;
+                this.position = 0;
+                this.owner = 0;
+                this.updateReadings = function() {
                     console.log('update bullet readings');
-                },
-
-                draw: function() {
-                     console.log('draw bullet');
-                },
+                };
+                this.draw = function() {
+                    console.log('draw bullet');
+                };
             };
 
-            function player(color, rotateAnticlockwiseKey, rotateClockwiseKey, shootKey, startPosition) {
+            function player(id, color, rotateAnticlockwiseKey, rotateClockwiseKey, shootKey, startPosition) {
                 this.color = color;
                 this.rotateAnticlockwiseKey = rotateAnticlockwiseKey;
                 this.rotateClockwiseKey = rotateClockwiseKey;
                 this.shootKey = shootKey;
-                this.bullets = 2;
+                this.ammo = 2;
                 this.kills = 0;
                 this.lives = 10;
                 this.takeOffPosition = 1;
@@ -105,34 +106,38 @@
                 this.thrust= 600;
                 this.fire = function() {
                     console.log('player fired');
+                    if (this.ammo > 1) {
+                        this.bullets -= 1;
+                        bullets.push (new bullet(this.x));
+                    }
                 };
 
 
                 this.checkKeyboard = function() {
 
                     if (keydown.left) {
-                        player1.angleOfAttack += player1.turnSpeed;
+                        this.angleOfAttack += this.turnSpeed;
                     }
 
                     if (keydown.right) {
-                        player1.angleOfAttack -= player1.turnSpeed;
+                        this.angleOfAttack -= this.turnSpeed;
 
                     }
 
                     if (keydown.space) {
-                        console.log('fire');
+                        this.fire();
                     }
 
 
-                    if (player1.angleOfAttack >= (Math.PI))
+                    if (this.angleOfAttack >= (Math.PI))
                     {
-                        player1.angleOfAttack = player1.angleOfAttack - (Math.PI * 2);
+                        this.angleOfAttack = this.angleOfAttack - (Math.PI * 2);
                     }
 
                     else {
-                        if (player1.angleOfAttack <= - Math.PI)
+                        if (this.angleOfAttack <= - Math.PI)
                         {
-                            player1.angleOfAttack = player1.angleOfAttack + (2 * Math.PI);
+                            this.angleOfAttack = this.angleOfAttack + (2 * Math.PI);
                         }
                     }
 
