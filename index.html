@@ -19,6 +19,10 @@
             var g = 10;
             var timeInterval = 1 / FPS;
             var bullets = [];
+            var players = [];
+
+            var planeHeight = 20;
+            var planeWidth = 40;
 
             /* Create canvas */
 
@@ -33,9 +37,7 @@
 
             /* Create players */ 
 
-            var player1  = new player(1,'#333', 'left', 'right','space');
-
-
+            players.push(new player(1,'#333', 'left', 'right','space'));
 
             /* Each frame */
     
@@ -43,51 +45,53 @@
 
                 /* TODO: Need this to run for each player */
 
-                player1.calculatePositions();
-                console.log(bullets.length);
+                for (var i=0;i<players.length;i++) {
+                    var player = players[i];
+                    player.calculatePositions();
+                    player.draw();
+                    player.drawForceVectors();
+                }
 
                 for (var i=0;i<bullets.length;i++) {
-                    console.log(bullets[i].sourceX);
+                    console.log(bullets[i].draw());
                 }
             }
-
-    
-            function draw() {
-                canvas.clearRect(0, 0, canvasWidth, canvasHeight);
-                player1.draw();
-                player1.drawForceVectors();
-            }
-            
             
             setInterval(function() {
+                canvas.clearRect(0, 0, canvasWidth, canvasHeight);
                 update();
-                draw();
             }, 1000/FPS);
 
 
-            function bullet(sourceX) {
-                this.speed = 100; //needs to be about twice the maximum speed of the plane?
-                this.x = 0;
-                this.y = 0;
-                this.sourceX = sourceX; 
-                this.sourceY = 0;
-                this.angle = 0;
+            function bullet(owner, sourceX, sourceY, angle) {
+                this.speed = 5;
+                this.x = sourceX + planeWidth;
+                this.bulletRadius = 4;
+                this.y = canvasHeight - sourceY + planeHeight;
+                this.angle = angle;
                 this.position = 0;
-                this.owner = 0;
+                this.owner = owner;
                 this.updateReadings = function() {
-                    console.log('update bullet readings');
+                    this.x = (Math.cos(this.angle) * this.speed) + this.x;
+                    this.y = (Math.sin(-this.angle) * this.speed) + this.y;
                 };
+
                 this.draw = function() {
-                    console.log('draw bullet');
+                    this.updateReadings();
+                     canvas.beginPath();
+                    canvas.arc(this.x,this.y, this.bulletRadius, 0, Math.PI*2, true); 
+                    canvas.closePath();
+                    canvas.fill();
                 };
             };
 
             function player(id, color, rotateAnticlockwiseKey, rotateClockwiseKey, shootKey, startPosition) {
+                this.id = id;
                 this.color = color;
                 this.rotateAnticlockwiseKey = rotateAnticlockwiseKey;
                 this.rotateClockwiseKey = rotateClockwiseKey;
                 this.shootKey = shootKey;
-                this.ammo = 2;
+                this.ammo = 20;
                 this.kills = 0;
                 this.lives = 10;
                 this.takeOffPosition = 1;
@@ -97,18 +101,16 @@
                 this.turnSpeed= Math.PI / 32;
                 this.xSpeed=0;
                 this.ySpeed=0;
-                this.width=40;
-                this.height=20;
                 this.mass=100;
                 this.weight= 0;
                 this.terminalVelocity=50;
                 this.dragCoefficient= 0.1;
                 this.thrust= 600;
+
                 this.fire = function() {
-                    console.log('player fired');
                     if (this.ammo > 1) {
-                        this.bullets -= 1;
-                        bullets.push (new bullet(this.x));
+                        this.ammo -= 1;
+                        bullets.push (new bullet(this.id, this.x, this.y, this.angleOfAttack));
                     }
                 };
 
@@ -298,18 +300,18 @@
                     this.updateReadings();
                     canvas.save();
                     canvas.translate(this.x, (canvasHeight - this.y));
-                    canvas.translate(this.width, this.height);
+                    canvas.translate(planeWidth, planeHeight);
                     canvas.rotate(-this.angleOfAttack);
                     canvas.fillStyle = this.color;
-                    canvas.fillRect((- this.width / 2), (- this.height / 2), this.width, this.height);
+                    canvas.fillRect((- planeWidth / 2), (- planeHeight / 2), planeWidth, planeHeight);
                     canvas.restore();
                 };
 
                 this.drawForceVectors = function() {
 
                     var lineScale = 1;
-                    var currentX = this.x + this.width;
-                    var currentY = canvasHeight - this.y + this.height;
+                    var currentX = this.x + planeWidth;
+                    var currentY = canvasHeight - this.y + planeHeight;
 
 
                     /* Weight */
