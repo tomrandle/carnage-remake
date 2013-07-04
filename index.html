@@ -38,7 +38,7 @@
             /* Create players */ 
 
             players.push(new player(1,'#333', 'left', 'right','space'));
-            players.push(new player(2,'#181818', 'q', 'w','e'));
+            players.push(new player(2,'#ff3300', 'q', 'w','e'));
 
 
             /* Each frame */
@@ -304,7 +304,52 @@
                     canvas.fillStyle = this.color;
                     canvas.fillRect((- planeWidth / 2), (- planeHeight / 2), planeWidth, planeHeight);
                     canvas.restore();
+
+
+                    //Begin our drawing
+
+                    var centerX = this.x + planeWidth;
+                    var centerY = canvasHeight - this.y + planeHeight;
+
+                    var internalAngle = Math.atan(planeHeight / planeWidth);
+                    var internalLength = Math.sqrt((planeWidth * planeWidth) + (planeHeight * planeHeight)) * 0.5;
+             
+                    var pheta = this.angleOfAttack + internalAngle;
+                    var alpha = this.angleOfAttack - internalAngle;
+
+                    var topRightX = centerX + (internalLength * Math.cos(pheta));
+                    var topRightY = centerY - (internalLength * Math.sin(pheta)) ;
+                 
+                    var bottomRightX = centerX + (internalLength * Math.cos(alpha));
+                    var bottomRightY = centerY - (internalLength * Math.sin(alpha));
+
+                    var bottomLeftX = centerX - (internalLength * Math.cos(-pheta));
+                    var bottomLeftY = centerY - (internalLength * Math.sin(-pheta)) ;
+                 
+                    var topLeftX = centerX - (internalLength * Math.cos(-alpha));
+                    var topLeftY = centerY - (internalLength * Math.sin(-alpha));
+
+
+                    canvas.beginPath();
+                    canvas.moveTo(topRightX, topRightY);
+
+                    canvas.lineTo(bottomRightX,bottomRightY);
+                    canvas.lineTo(bottomLeftX, bottomLeftY);
+                    canvas.lineTo(topLeftX,topLeftY);
+                     
+                    //Define the style of the shape
+                    canvas.lineWidth = 1;
+                    canvas.fillStyle = "rgb(102, 204, 0)";
+                    canvas.strokeStyle = "rgb(0, 50, 200)";
+                     
+                    //Close the path
+                    canvas.closePath(); 
+                     
+                    //Fill the path with ourline and color
+                    canvas.fill();
+                    canvas.stroke();
                 };
+
 
                 this.drawForceVectors = function() {
 
