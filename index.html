@@ -38,7 +38,7 @@
             /* Create players */ 
 
             players.push(new player(1,'#333', 'left', 'right','space'));
-            players.push(new player(2,'#181818', 'i', 'o','p'));
+            players.push(new player(2,'#181818', 'q', 'w','e'));
 
 
             /* Each frame */
@@ -80,7 +80,7 @@
 
                 this.draw = function() {
                     this.updateReadings();
-                     canvas.beginPath();
+                    canvas.beginPath();
                     canvas.arc(this.x,this.y, this.bulletRadius, 0, Math.PI*2, true); 
                     canvas.closePath();
                     canvas.fill();
@@ -116,22 +116,19 @@
                     }
                 };
 
-
                 this.checkKeyboard = function() {
 
-                    if (keydown.left) {
+                    if (keydown[this.rotateAnticlockwiseKey]) {
                         this.angleOfAttack += this.turnSpeed;
                     }
 
-                    if (keydown.right) {
+                    if (keydown[this.rotateClockwiseKey]) {
                         this.angleOfAttack -= this.turnSpeed;
-
                     }
 
-                    if (keydown.space) {
+                    if (keydown[this.shootKey]) {
                         this.fire();
                     }
-
 
                     if (this.angleOfAttack >= (Math.PI))
                     {
