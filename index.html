@@ -7,10 +7,57 @@
 
     <script src="keyStatus.js"></script>
     <script src="jquery.hotkeys.js"></script>
+        <script src="libraries/sat/SAT.js"></script>
+
 
     <script>
 
         $(document).ready(function() {
+
+
+            var aCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
+            var bCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
+
+            console.log(aCoordinates);
+
+            collisionTest();
+            function collisionTest() {
+
+                var V = SAT.Vector;
+                var P = SAT.Polygon;
+
+                // Polygon A
+                var polygon1 = new P(
+                    new V(0,0), [
+                        new V(0,0),
+                        new V(40,0),
+                        new V(40,40),
+                        new V(0,40)
+                    ]);
+
+                // Polygon B
+                var polygon2 = new P(
+                    new V(30,0), [
+                        new V(0,0),
+                        new V(30, 0),
+                        new V(0, 30)
+                    ]);
+                
+                // Check collisisons
+
+                var response = new SAT.Response();
+                var collided = SAT.testPolygonPolygon(polygon1, polygon2, response);
+
+                console.log(collided);
+
+
+                // collided => true
+                // response.overlap => 10
+                // response.overlapN => (10, 0)
+
+
+            }
+
 
 
             /* Variables */
@@ -330,24 +377,27 @@
                     var topLeftY = centerY - (internalLength * Math.sin(-alpha));
 
 
-                    canvas.beginPath();
-                    canvas.moveTo(topRightX, topRightY);
 
-                    canvas.lineTo(bottomRightX,bottomRightY);
-                    canvas.lineTo(bottomLeftX, bottomLeftY);
-                    canvas.lineTo(topLeftX,topLeftY);
+
+
+                    // canvas.beginPath();
+                    // canvas.moveTo(topRightX, topRightY);
+
+                    // canvas.lineTo(bottomRightX,bottomRightY);
+                    // canvas.lineTo(bottomLeftX, bottomLeftY);
+                    // canvas.lineTo(topLeftX,topLeftY);
                      
-                    //Define the style of the shape
-                    canvas.lineWidth = 1;
-                    canvas.fillStyle = "rgb(102, 204, 0)";
-                    canvas.strokeStyle = "rgb(0, 50, 200)";
+                    // //Define the style of the shape
+                    // canvas.lineWidth = 1;
+                    // canvas.fillStyle = "rgb(102, 204, 0)";
+                    // canvas.strokeStyle = "rgb(0, 50, 200)";
                      
-                    //Close the path
-                    canvas.closePath(); 
+                    // //Close the path
+                    // canvas.closePath(); 
                      
-                    //Fill the path with ourline and color
-                    canvas.fill();
-                    canvas.stroke();
+                    // //Fill the path with ourline and color
+                    // canvas.fill();
+                    // canvas.stroke();
                 };
 
 
