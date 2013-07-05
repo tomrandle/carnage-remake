@@ -59,11 +59,12 @@
                     /* Check for collisions */
 
 
-                    // collisionTest(aCoordinates,bCoordinates);
  
                     /* Update and draw */
 
                     player.calculatePositions();
+                                        collisionTest(players[0].getCoordinates(),players[1].getCoordinates());
+
                     player.draw();
                     player.drawForceVectors();
                 }
@@ -122,6 +123,7 @@
                 this.terminalVelocity=50;
                 this.dragCoefficient= 0.1;
                 this.thrust= 600;
+                this.coordinates;
 
                 this.fire = function() {
                     if (this.ammo > 1) {
@@ -319,6 +321,8 @@
                     canvas.restore();
 
 
+                },
+                this.getCoordinates = function() {
                     //Begin our drawing
 
                     var centerX = this.x;
@@ -330,40 +334,45 @@
                     var pheta = this.angleOfAttack + internalAngle;
                     var alpha = this.angleOfAttack - internalAngle;
 
-                    var topRightX = centerX + (internalLength * Math.cos(pheta));
-                    var topRightY = centerY - (internalLength * Math.sin(pheta)) ;
+                    var topRightX = (internalLength * Math.cos(pheta));
+                    var topRightY = - (internalLength * Math.sin(pheta)) ;
                  
-                    var bottomRightX = centerX + (internalLength * Math.cos(alpha));
-                    var bottomRightY = centerY - (internalLength * Math.sin(alpha));
+                    var bottomRightX = (internalLength * Math.cos(alpha));
+                    var bottomRightY = - (internalLength * Math.sin(alpha));
 
-                    var bottomLeftX = centerX - (internalLength * Math.cos(-pheta));
-                    var bottomLeftY = centerY - (internalLength * Math.sin(-pheta)) ;
+                    var bottomLeftX = - (internalLength * Math.cos(-pheta));
+                    var bottomLeftY =  - (internalLength * Math.sin(-pheta)) ;
                  
-                    var topLeftX = centerX - (internalLength * Math.cos(-alpha));
-                    var topLeftY = centerY - (internalLength * Math.sin(-alpha));
+                    var topLeftX = - (internalLength * Math.cos(-alpha));
+                    var topLeftY = - (internalLength * Math.sin(-alpha));
 
 
-                    // var aCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
-                    // var bCoordinates = [[10,5],[0,0],[40,0],[40,4],[0,40]];
+                    return [
+                        [centerX, centerY],
+                        [topRightX, topRightY],
+                        [bottomRightX, bottomRightY],
+                        [bottomLeftX, bottomLeftY],
+                        [topLeftX,topLeftY]
+                    ];
 
-                    canvas.beginPath();
-                    canvas.moveTo(topRightX, topRightY);
+                    // canvas.beginPath();
+                    // canvas.moveTo(topRightX, topRightY);
 
-                    canvas.lineTo(bottomRightX,bottomRightY);
-                    canvas.lineTo(bottomLeftX, bottomLeftY);
-                    canvas.lineTo(topLeftX,topLeftY);
+                    // canvas.lineTo(bottomRightX,bottomRightY);
+                    // canvas.lineTo(bottomLeftX, bottomLeftY);
+                    // canvas.lineTo(topLeftX,topLeftY);
                      
-                    //Define the style of the shape
-                    canvas.lineWidth = 1;
-                    canvas.fillStyle = "rgb(102, 204, 0)";
-                    canvas.strokeStyle = "rgb(0, 50, 200)";
+                    // //Define the style of the shape
+                    // canvas.lineWidth = 1;
+                    // canvas.fillStyle = "rgb(102, 204, 0)";
+                    // canvas.strokeStyle = "rgb(0, 50, 200)";
                      
-                    //Close the path
-                    canvas.closePath(); 
+                    // //Close the path
+                    // canvas.closePath(); 
                      
-                    //Fill the path with ourline and color
-                    canvas.fill();
-                    canvas.stroke();
+                    // //Fill the path with ourline and color
+                    // canvas.fill();
+                    // canvas.stroke();
                 };
 
 
