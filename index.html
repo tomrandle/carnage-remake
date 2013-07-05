@@ -16,31 +16,33 @@
 
 
             var aCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
-            var bCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
+            var bCoordinates = [[10,5],[0,0],[40,0],[40,4],[0,40]];
 
-            console.log(aCoordinates);
 
-            collisionTest();
-            function collisionTest() {
+            collisionTest(aCoordinates,bCoordinates);
+
+            function collisionTest(a,b) {
 
                 var V = SAT.Vector;
                 var P = SAT.Polygon;
 
                 // Polygon A
                 var polygon1 = new P(
-                    new V(0,0), [
-                        new V(0,0),
-                        new V(40,0),
-                        new V(40,40),
-                        new V(0,40)
+                    new V(a[0][0],a[0][1]), [
+                        new V(a[1][0],a[1][1]),
+                        new V(a[2][0],a[2][1]),
+                        new V(a[3][0],a[3][1]),
+                        new V(a[4][0],a[4][1]),
                     ]);
 
                 // Polygon B
                 var polygon2 = new P(
-                    new V(30,0), [
-                        new V(0,0),
-                        new V(30, 0),
-                        new V(0, 30)
+                            new V(b[0][0],b[0][1]), [
+                        new V(b[1][0],b[1][1]),
+                        new V(b[2][0],b[2][1]),
+                        new V(b[3][0],b[3][1]),
+                        new V(b[4][0],b[4][1]),
+    
                     ]);
                 
                 // Check collisisons
@@ -50,13 +52,10 @@
 
                 console.log(collided);
 
-
-                // collided => true
-                // response.overlap => 10
-                // response.overlapN => (10, 0)
+                return(collided);
 
 
-            }
+            };
 
 
 
@@ -465,7 +464,7 @@
 </head>
 
 <body>
-    <table id="data">
+<!--     <table id="data">
         <tr><td>Bearing</td><td id="bearing-value"></td></tr>
         <tr><td>Angle of motion</td><td id="angle-of-motion-value"></td></tr>
 
@@ -487,7 +486,7 @@
         <tr><td>Drag</td><td id="drag-value"></td></tr>
 
 
-    </table>
+    </table> -->
 </body>
 
 </html>
