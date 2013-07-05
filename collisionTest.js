@@ -15,7 +15,7 @@ function collisionTest(a,b) {
 
     // Polygon B
     var polygon2 = new P(
-                new V(b[0][0],b[0][1]), [
+        new V(b[0][0],b[0][1]), [
             new V(b[1][0],b[1][1]),
             new V(b[2][0],b[2][1]),
             new V(b[3][0],b[3][1]),
@@ -23,7 +23,7 @@ function collisionTest(a,b) {
 
         ]);
     
-    // Check collisisons
+    // Check collisions
 
     var response = new SAT.Response();
     var collided = SAT.testPolygonPolygon(polygon1, polygon2, response);

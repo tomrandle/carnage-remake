@@ -13,24 +13,12 @@
     <script src="collisionTest.js"></script>
 
 
-
-
     <link rel="stylesheet" type="text/css" href="style.css" />
 
     <script>
 
         $(document).ready(function() {
-
-
-            var aCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
-            var bCoordinates = [[10,5],[0,0],[40,0],[40,4],[0,40]];
-
-
-            collisionTest(aCoordinates,bCoordinates);
-
            
-
-
             /* Variables */
 
             var FPS = 30;
@@ -67,6 +55,14 @@
 
                 for (var i=0;i<players.length;i++) {
                     var player = players[i];
+
+                    /* Check for collisions */
+
+
+                    // collisionTest(aCoordinates,bCoordinates);
+ 
+                    /* Update and draw */
+
                     player.calculatePositions();
                     player.draw();
                     player.drawForceVectors();
@@ -115,8 +111,8 @@
                 this.kills = 0;
                 this.lives = 10;
                 this.takeOffPosition = 1;
-                this.x = 220;
-                this.y = 270;
+                this.x = 50;
+                this.y = 50;
                 this.angleOfAttack= 0;
                 this.turnSpeed= Math.PI / 32;
                 this.xSpeed=0;
@@ -317,7 +313,6 @@
                     this.updateReadings();
                     canvas.save();
                     canvas.translate(this.x, (canvasHeight - this.y));
-                    canvas.translate(planeWidth, planeHeight);
                     canvas.rotate(-this.angleOfAttack);
                     canvas.fillStyle = this.color;
                     canvas.fillRect((- planeWidth / 2), (- planeHeight / 2), planeWidth, planeHeight);
@@ -326,8 +321,8 @@
 
                     //Begin our drawing
 
-                    var centerX = this.x + planeWidth;
-                    var centerY = canvasHeight - this.y + planeHeight;
+                    var centerX = this.x;
+                    var centerY = canvasHeight - this.y;
 
                     var internalAngle = Math.atan(planeHeight / planeWidth);
                     var internalLength = Math.sqrt((planeWidth * planeWidth) + (planeHeight * planeHeight)) * 0.5;
@@ -348,32 +343,35 @@
                     var topLeftY = centerY - (internalLength * Math.sin(-alpha));
 
 
-                    // canvas.beginPath();
-                    // canvas.moveTo(topRightX, topRightY);
+                    // var aCoordinates = [[0,0],[0,0],[40,0],[40,4],[0,40]];
+                    // var bCoordinates = [[10,5],[0,0],[40,0],[40,4],[0,40]];
 
-                    // canvas.lineTo(bottomRightX,bottomRightY);
-                    // canvas.lineTo(bottomLeftX, bottomLeftY);
-                    // canvas.lineTo(topLeftX,topLeftY);
+                    canvas.beginPath();
+                    canvas.moveTo(topRightX, topRightY);
+
+                    canvas.lineTo(bottomRightX,bottomRightY);
+                    canvas.lineTo(bottomLeftX, bottomLeftY);
+                    canvas.lineTo(topLeftX,topLeftY);
                      
-                    // //Define the style of the shape
-                    // canvas.lineWidth = 1;
-                    // canvas.fillStyle = "rgb(102, 204, 0)";
-                    // canvas.strokeStyle = "rgb(0, 50, 200)";
+                    //Define the style of the shape
+                    canvas.lineWidth = 1;
+                    canvas.fillStyle = "rgb(102, 204, 0)";
+                    canvas.strokeStyle = "rgb(0, 50, 200)";
                      
-                    // //Close the path
-                    // canvas.closePath(); 
+                    //Close the path
+                    canvas.closePath(); 
                      
-                    // //Fill the path with ourline and color
-                    // canvas.fill();
-                    // canvas.stroke();
+                    //Fill the path with ourline and color
+                    canvas.fill();
+                    canvas.stroke();
                 };
 
 
                 this.drawForceVectors = function() {
 
                     var lineScale = 1;
-                    var currentX = this.x + planeWidth;
-                    var currentY = canvasHeight - this.y + planeHeight;
+                    var currentX = this.x;
+                    var currentY = canvasHeight - this.y;
 
 
                     /* Weight */
