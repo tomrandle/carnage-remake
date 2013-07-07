@@ -28,7 +28,10 @@ function planeCollisionTest(a,b) {
     var response = new SAT.Response();
     var collided = SAT.testPolygonPolygon(polygon1, polygon2, response);
 
-    console.log('Plane collided', collided);
+
+    if (collided) {
+        console.log('Plane collided', collided);
+    }
 
     return(collided);
 
@@ -58,8 +61,13 @@ function bulletCollisionTest(plane, bullet) {
     var response = new SAT.Response();
     var collided = SAT.testPolygonCircle(polygon, circle, response);
 
-    console.log('Bullet hit:', collided);
+
+    if (collided) {
+        console.log('Bullet hit:', collided);
+    }
+    
     return (collided);
+
 
 
 }
