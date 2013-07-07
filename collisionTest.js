@@ -28,7 +28,7 @@ function planeCollisionTest(a,b) {
     var response = new SAT.Response();
     var collided = SAT.testPolygonPolygon(polygon1, polygon2, response);
 
-    console.log(collided);
+    console.log('Plane collided', collided);
 
     return(collided);
 
@@ -42,7 +42,7 @@ function bulletCollisionTest(plane, bullet) {
 
     //circle x y radius
 
-    var circle = new C(new V(50,50), 20);
+    var circle = new C(new V(bullet[0],bullet[1]), bullet[2]);
 
     //  Plane Polygon
     
@@ -58,12 +58,9 @@ function bulletCollisionTest(plane, bullet) {
     var response = new SAT.Response();
     var collided = SAT.testPolygonCircle(polygon, circle, response);
 
-    console.log(collided);
+    console.log('Bullet hit:', collided);
     return (collided);
 
-    // collided => true
-    // response.overlap ~> 5.86
-    // response.overlapV ~> (4.14, 4.14) - i.e. on a diagonal
 
 }
 
