@@ -9,7 +9,6 @@
     <script src="jquery.hotkeys.js"></script>
 
     <script src="libraries/sat/SAT.js"></script>
-
     <script src="collisionTest.js"></script>
 
 
@@ -55,15 +54,16 @@
 
                 for (var i=0;i<players.length;i++) {
                     var player = players[i];
+ 
+                    /* Update positions */
+
+                    player.calculatePositions();
 
                     /* Check for collisions */
 
+                    planeCollisionTest(players[0].getCoordinates(),players[1].getCoordinates());
 
- 
-                    /* Update and draw */
-
-                    player.calculatePositions();
-                                        collisionTest(players[0].getCoordinates(),players[1].getCoordinates());
+                    /* Check for collisions */
 
                     player.draw();
                     player.drawForceVectors();
