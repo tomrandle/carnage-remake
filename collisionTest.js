@@ -1,4 +1,3 @@
-
 function planeCollisionTest(a,b) {
 
     var V = SAT.Vector;
@@ -57,18 +56,10 @@ function bulletCollisionTest(plane, bullet) {
         new V(plane[4][0],plane[4][1]),
     ]);
 
-
     var response = new SAT.Response();
     var collided = SAT.testPolygonCircle(polygon, circle, response);
-
-
-    if (collided) {
-        console.log('Bullet hit:', collided);
-    }
     
     return (collided);
-
-
 
 }
 
