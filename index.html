@@ -42,15 +42,14 @@
 
             /* Create players */ 
 
-            players.push(new player(1,'#333', 'left', 'right','space'));
-            players.push(new player(2,'#ff3300', 'q', 'w','e'));
+            players.push(new player(0,'Baron von PB','#333', 'left', 'right','space'));
+            players.push(new player(1,'Wing commander fox','#ff3300', 'q', 'w','e'));
 
 
             /* Each frame */
     
             function update() {
 
-                /* TODO: Need this to run for each player */
 
                 for (var i=0;i<players.length;i++) {
                     var player = players[i];
@@ -70,38 +69,50 @@
                 }
 
 
-                var destroyBullet = function(bullet, player) {
-                    bullets.splice(bullet,1);
-                    // console.log('destroy bullet');
-                    players[player].ammo += 1;
-                    // console.log(players[player].ammo);
-
-                } 
+                /* Draw bullets */
 
                 for (var i=0;i<bullets.length;i++) {
                     
                     bullets[i].draw();
 
+                    /* Remove any bullets no longer on canvas */
                     if (bullets[i].x < 0 | bullets[i].x > canvasWidth | bullets[i].y < 0 | bullets[i].y > canvasHeight )
                     {
-                        destroyBullet(i,1);
+                        destroyBullet(i,bullets[i].owner);
 
-                    }
-
-                    else 
-                    {
-                        if (bulletCollisionTest(players[0].getCoordinates(), bullets[i].getCoordinates()))
-                        {
-                            destroyBullet(i,0);
-                        }
                     }
                 }
+
+
+                /* Check for bullet hits */
+
+                for (var j=0;j<players.length;j++) {
+
+
+                    for (var i=0;i<bullets.length;i++) {
+                    
+                            if (bulletCollisionTest(players[j].getCoordinates(), bullets[i].getCoordinates()))
+                            {
+                                console.log('Hit by:',players[bullets[i].owner].name);
+                                destroyBullet(i,bullets[i].owner);
+                            }
+                        
+                    }
+                }
+
+
             }
             
             setInterval(function() {
                 canvas.clearRect(0, 0, canvasWidth, canvasHeight);
                 update();
             }, 1000/FPS);
+
+            var destroyBullet = function(bullet, player) {
+                bullets.splice(bullet,1);
+                players[player].ammo += 1;
+
+            } 
 
 
             function bullet(owner, sourceX, sourceY, angle) {
@@ -133,14 +144,15 @@
 
             };
 
-            function player(id, color, rotateAnticlockwiseKey, rotateClockwiseKey, shootKey, startPosition) {
+            function player(id , name, color, rotateAnticlockwiseKey, rotateClockwiseKey, shootKey, startPosition) {
                 this.id = id;
+                this.name = name;
                 this.health = 0;
                 this.color = color;
                 this.rotateAnticlockwiseKey = rotateAnticlockwiseKey;
                 this.rotateClockwiseKey = rotateClockwiseKey;
                 this.shootKey = shootKey;
-                this.ammo = 20;
+                this.ammo = 10;
                 this.kills = 0;
                 this.lives = 10;
                 this.takeOffPosition = 1;
@@ -161,8 +173,8 @@
                     if (this.ammo > 1) {
                         this.ammo -= 1;
 
-                        var sourceX = (Math.cos(-this.angleOfAttack) * planeHeight) + this.x;
-                        var sourceY = this.y + Math.sin(this.angleOfAttack) * planeHeight;
+                        var sourceX = this.x + (Math.cos(-this.angleOfAttack) * planeHeight * 1.1);
+                        var sourceY = this.y + Math.sin(this.angleOfAttack) * planeHeight* 1.1;
 
                         bullets.push (new bullet(this.id, sourceX, sourceY, this.angleOfAttack));
                     }
